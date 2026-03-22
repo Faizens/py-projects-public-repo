@@ -18,7 +18,7 @@ Setup:
 ### Spinner.py
 
 Rotating wheel animation with keyboard controls.
-
+![Spinner Wheel Animation](spinner.png)
 Features:
 - 3 rotating colored dots (red, yellow, blue)
 - A key = Spin left
