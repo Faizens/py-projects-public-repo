@@ -70,10 +70,45 @@ def format_time(secs):
 
 def draw_top_bar(win, elapsed_time, target_pressed, misses):
     pygame.draw.rect(win, "grey", (0, 0, width, top_bar_height))
-    time_label = label_font.render(
-        f"Time: {format_time(elapsed_time)}", 1, 'black')
+    time_label = label_font.render(f"Time: {format_time(elapsed_time)}", 1, 'black')
+        
+    speed = round(target_pressed / elapsed_time, 1)
+    speed_label = label_font.render(f"Speed: {speed} t/s", 1, "black")
+    hits_label = label_font.render(f"Hits: {target_pressed} ", 1, "black")
+    lives_label = label_font.render(f"Lives: {lives - misses} ", 1, "black")
 
     win.blit(time_label, (5, 5))
+    win.blit(speed_label, (200, 5))
+    win.blit(hits_label, (450, 5))
+    win.blit(lives_label, (650, 5))
+
+def end_screen(win, elapsed_time, target_pressed, clicks):
+    win.fill(bg_color)
+    time_label = label_font.render(f"Time: {format_time(elapsed_time)}", 1, 'white')
+        
+    speed = round(target_pressed / elapsed_time, 1)
+    speed_label = label_font.render(f"Speed: {speed} t/s", 1, "white")
+    hits_label = label_font.render(f"Hits: {target_pressed} ", 1, "white")
+    
+    accuracy = round(target_pressed / clicks * 100, 1)
+    accuracy_label = label_font.render(f"Accuracy: {accuracy}% ", 1, "white")
+
+    win.blit(time_label, (get_middle(time_label), 100))
+    win.blit(speed_label, (get_middle(speed_label), 200))
+    win.blit(hits_label, (get_middle(hits_label), 300))
+    win.blit(accuracy_label, (get_middle(accuracy_label), 400))
+
+    pygame.display.update()
+
+    run = True
+    while run:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT or event.type == pygame.KEYDOWN:
+                quit()
+               
+
+def get_middle(surface):
+    return width / 2 - surface.get_width() / 2
 
 def main():
     run = True 
@@ -105,7 +140,7 @@ def main():
 
             if event.type == target_event:
                 x = random.randint(target_padding, width - target_padding)
-                y = random.randint(target_padding, height - target_padding)
+                y = random.randint(target_padding + top_bar_height, height - target_padding)
                 target = Target(x, y)
                 targets.append(target)
 
@@ -125,7 +160,8 @@ def main():
                 target_pressed += 1
 
         if misses >= lives:
-            pass # end the game
+            end_screen(win, elapsed_time, target_pressed, clicks)
+
             
         draw(win, targets)
         draw_top_bar(win, elapsed_time, target_pressed, misses)
